@@ -2,7 +2,6 @@
 #include <iostream>
 #include <thread>
 #include <cmath>
-#include <sstream>
 #include <iomanip>
 
 #include <ftxui/dom/elements.hpp>
@@ -95,7 +94,7 @@ static auto makeDoc(const State &state) {
 
 }
 
-int main(int argc, const char* argv[]) {
+int main(int /*argc*/, const char** /*argv[]*/) {
     using namespace chrono_literals;
 
     dmd::State state;
