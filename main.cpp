@@ -17,7 +17,7 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     state.status.title = L"Initializing...";
     state.progress.prefix = L"Process ";
     state.progress.limit = 4 * 60 * 9600;
-
+    state.params = {{L"freq", L"1800"}, {L"mode", L"PSK-8"}, {L"speed", L"1200"}, {L"interleaver", L"long"}};
 
     auto r = make_unique<dmd::TuiRender>();
     std::this_thread::sleep_for(200ms);

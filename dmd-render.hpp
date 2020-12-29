@@ -24,6 +24,8 @@ struct State {
         return ts;
     };
 
+    std::vector<std::pair<std::wstring, std::wstring>> params;
+
     struct {
         std::wstring title;
         std::wstring value;
@@ -91,7 +93,7 @@ static auto makeDoc(const State &state) {
     static const unsigned pw = 20, ph = 9;
     Elements log_lines;
     const auto &lines = state.log.buffer;
-    for (auto it = lines.cend() - std::min<unsigned>(lines.size(), ph - 3); it < lines.end(); ++it) {
+    for (auto it = lines.cend() - std::min<unsigned>(lines.size(), ph - 4); it < lines.end(); ++it) {
         auto line = *it;
 //TODO Add tripoints for long lines
 //        for (int x = 0; x < std::min<unsigned>(line.size(), maxWidth); ++x)
@@ -105,18 +107,27 @@ static auto makeDoc(const State &state) {
         }));
     }
 
+    Elements params_line;
+    for (const auto &p : state.params) {
+        params_line.push_back(hbox({
+           color(Color::GrayDark, text(p.first + L' ')),
+           color(Color::Cyan, text(p.second + L"  "))
+        }));
+    }
+
     return
         vbox({
             hbox({
                 vbox({
                     hbox({text(state.header.title), color(Color::DarkGreen, text(state.header.value))}),
+                    hbox(params_line),
                     hbox({
                         text(state.progress.prefix),
                         color(Color::CyanLight, text(state.progress.percent())),
                         color(Color::CyanLight, gauge(state.progress.value())) | flex,
                         color(Color::GrayDark, text(state.progress.suffix)),
                     }),
-                    vbox(log_lines) | size(HEIGHT, EQUAL, ph - 3),
+                    vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
                     text(state.status.title),
                 }) | flex,
                 bgcolor(Color::GrayDark, text(L"+") | hcenter | vcenter)
