@@ -16,7 +16,7 @@ set(FTXUI_DIR "./../FTXUI")
 
 #include_directories(${RX_TERM}/include)
 
-set(APP_SRC main.cpp loren.h)
+set(APP_SRC main.cpp loren.hpp dmd-render.hpp)
 add_executable(dmd-term ${APP_SRC})
 target_include_directories(dmd-term PRIVATE ${FTXUI_DIR}/include)
 target_link_directories(dmd-term PRIVATE ${FTXUI_DIR}/lib)
