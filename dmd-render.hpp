@@ -70,10 +70,8 @@ struct State {
     } progress;
 
     struct Status {
-        std::wstring title;
-        unsigned value;
-
-        Status() : value{0} {}
+        int bits, text, phase;
+        Status() : bits{0}, text{0}, phase{0} {}
     } status;
 
     std::chrono::steady_clock::time_point start;
@@ -110,25 +108,43 @@ static auto makeDoc(const State &state) {
     Elements params_line;
     for (const auto &p : state.params) {
         params_line.push_back(hbox({
-           color(Color::GrayDark, text(p.first + L' ')),
-           color(Color::Cyan, text(p.second + L"  "))
+            text(L"·")           | color(Color::BlueLight),
+            text(p.first + L" ") | color(Color::GrayDark),
+            text(p.second)       | color(Color::BlueLight),
         }));
+        params_line.push_back(text(L" ⁞ ") | color(Color::GrayDark));
     }
+    if (!params_line.empty()) params_line.pop_back();
+
+    Elements status_line;
+    auto push_status = [&status_line](const std::wstring &title, int value) {
+        if (value < 0) return;
+        status_line.push_back(hbox({
+            text(L"·")                   | color(Color::GreenLight),
+            text(title + L" ")           | color(Color::GrayDark),
+            text(std::to_wstring(value)) | color(Color::GreenLight)
+        }));
+        status_line.push_back(text(L" ⁞ ") | color(Color::GrayDark));
+    };
+    push_status(L"Bits",  state.status.bits);
+    push_status(L"Text",  state.status.text);
+    push_status(L"Phase", state.status.phase);
+    status_line.pop_back();
 
     return
         vbox({
             hbox({
                 vbox({
-                    hbox({text(state.header.title), color(Color::DarkGreen, text(state.header.value))}),
-                    hbox(params_line),
+                    hbox({text(state.header.title + L" "), color(Color::DarkGreen, text(state.header.value))}),
+                    hbox({text(L"Params "), hbox(params_line)}),
                     hbox({
-                        text(state.progress.prefix),
+                        text(state.progress.prefix + L" "),
                         color(Color::CyanLight, text(state.progress.percent())),
                         color(Color::CyanLight, gauge(state.progress.value())) | flex,
                         color(Color::GrayDark, text(state.progress.suffix)),
                     }),
                     vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
-                    text(state.status.title),
+                    hbox({text(L"Results "), hbox(status_line)}),
                 }) | flex,
                 bgcolor(Color::GrayDark, text(L"+") | hcenter | vcenter)
                     | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, ph)

@@ -12,12 +12,12 @@ int main(int /*argc*/, const char** /*argv[]*/) {
 
     dmd::State state;
 
-    state.header.title = L"Processing file: ";
+    state.header.title = L"Processing file";
     state.header.value = L"~/signals/psk8-wav\x2026";
-    state.status.title = L"Initializing...";
-    state.progress.prefix = L"Process ";
+    state.progress.prefix = L"Process";
     state.progress.limit = 4 * 60 * 9600;
     state.params = {{L"freq", L"1800"}, {L"mode", L"PSK-8"}, {L"speed", L"1200"}, {L"interleaver", L"long"}};
+    state.status.text = -1;
 
     auto r = make_unique<dmd::TuiRender>();
     std::this_thread::sleep_for(200ms);
@@ -26,6 +26,8 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     const unsigned speed = 32;
     for (;;) {
         state.push_progress(9600 * 100 / 1000 * speed, nextLoren());
+        state.status.bits += 123;
+        state.status.phase += 324;
         r->render(state);
 
         if (state.progress.position >= state.progress.limit) break;
