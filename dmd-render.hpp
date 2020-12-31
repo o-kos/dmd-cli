@@ -105,31 +105,28 @@ static auto makeDoc(const State &state) {
         }));
     }
 
-    Elements params_line;
-    for (const auto &p : state.params) {
-        params_line.push_back(hbox({
-            text(L"·")           | color(Color::BlueLight),
-            text(p.first + L" ") | color(Color::GrayDark),
-            text(p.second)       | color(Color::BlueLight),
+    auto push_status = [](Elements &e, const std::wstring &title, const std::wstring &value, Color c) {
+        e.push_back(hbox({
+            text(L"·")          | color(c),
+            text(title + L" ")  | color(Color::GrayDark),
+            text(value)         | color(c)
         }));
-        params_line.push_back(text(L" ⁞ ") | color(Color::GrayDark));
-    }
+        e.push_back(text(L" ⁞ ") | color(Color::GrayDark));
+    };
+
+    Elements params_line;
+    for (const auto &p : state.params)
+        push_status(params_line, p.first, p.second, Color::BlueLight);
     if (!params_line.empty()) params_line.pop_back();
 
-    Elements status_line;
-    auto push_status = [&status_line](const std::wstring &title, int value) {
-        if (value < 0) return;
-        status_line.push_back(hbox({
-            text(L"·")                   | color(Color::GreenLight),
-            text(title + L" ")           | color(Color::GrayDark),
-            text(std::to_wstring(value)) | color(Color::GreenLight)
-        }));
-        status_line.push_back(text(L" ⁞ ") | color(Color::GrayDark));
+    Elements results_line;
+    auto push_result = [&](const std::wstring &title, int value) {
+        if (value >= 0) push_status(results_line, title, std::to_wstring(value), Color::GreenLight);
     };
-    push_status(L"Bits",  state.status.bits);
-    push_status(L"Text",  state.status.text);
-    push_status(L"Phase", state.status.phase);
-    status_line.pop_back();
+    push_result(L"bits",  state.status.bits);
+    push_result(L"text",  state.status.text);
+    push_result(L"phase", state.status.phase);
+    results_line.pop_back();
 
     return
         vbox({
@@ -144,7 +141,7 @@ static auto makeDoc(const State &state) {
                         color(Color::GrayDark, text(state.progress.suffix)),
                     }),
                     vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
-                    hbox({text(L"Results "), hbox(status_line)}),
+                    hbox({text(L"Results "), hbox(results_line)}),
                 }) | flex,
                 bgcolor(Color::GrayDark, text(L"+") | hcenter | vcenter)
                     | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, ph)
