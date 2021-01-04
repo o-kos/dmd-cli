@@ -6,8 +6,17 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <complex>
 
 #include <ftxui/dom/elements.hpp>
+
+namespace dmd {
+    using PhasePoints = std::vector<std::complex<float>>;
+}
+
+namespace ftxui {
+    Element phase(const dmd::PhasePoints &);
+}
 
 namespace dmd {
 
@@ -86,9 +95,9 @@ struct State {
     }
 };
 
-static auto makeDoc(const State &state) {
+static auto make_doc(const State &state) {
     using namespace ftxui;
-    static const unsigned pw = 20, ph = 9;
+    static const unsigned pw = 21, ph = 9;
     Elements log_lines;
     const auto &lines = state.log.buffer;
     for (auto it = lines.cend() - std::min<unsigned>(lines.size(), ph - 4); it < lines.end(); ++it) {
@@ -138,13 +147,12 @@ static auto makeDoc(const State &state) {
                         text(state.progress.prefix + L" "),
                         color(Color::CyanLight, text(state.progress.percent())),
                         color(Color::CyanLight, gauge(state.progress.value())) | flex,
-                        color(Color::GrayDark, text(state.progress.suffix)),
+                        color(Color::GrayDark,  text(state.progress.suffix)),
                     }),
                     vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
                     hbox({text(L"Results "), hbox(results_line)}),
                 }) | flex,
-                bgcolor(Color::GrayDark, text(L"+") | hcenter | vcenter)
-                    | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, ph)
+                phase({{0, 0}})
             }),
         });
 }
@@ -174,7 +182,7 @@ public:
         }
         if (d.dimx < 1) d.dimx = 80;
         auto screen = Screen::Create(d);
-        Render(screen, dmd::makeDoc(state));
+        Render(screen, dmd::make_doc(state));
         static std::string reset_position;
         if (reset_position.empty()) std::cout << "\x1B[?25l" << std::flush;
         std::cout << reset_position << screen.ToString() << std::flush;
