@@ -9,9 +9,13 @@
 #include <complex>
 
 #include <ftxui/dom/elements.hpp>
+#include <queue>
 
 namespace dmd {
-    using PhasePoints = std::vector<std::complex<float>>;
+    struct Point {
+        float x, y;
+    };
+    using PhasePoints = std::vector<Point>;
 }
 
 namespace ftxui {
@@ -83,6 +87,7 @@ struct State {
         Status() : bits{0}, text{0}, phase{0} {}
     } status;
 
+    dmd::PhasePoints points;
     std::chrono::steady_clock::time_point start;
 
     State() : start{std::chrono::steady_clock::now()} {}
@@ -92,6 +97,11 @@ struct State {
         auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
         log.push(cur_ms, log_line);
         progress.update(cur_ms, shift);
+    }
+
+    void push_phase(const dmd::PhasePoints &p) {
+        points.insert(points.end(), p.begin(), p.end());
+        status.phase += p.size();
     }
 };
 
@@ -145,14 +155,14 @@ static auto make_doc(const State &state) {
                     hbox({text(L"Params "), hbox(params_line)}),
                     hbox({
                         text(state.progress.prefix + L" "),
-                        color(Color::CyanLight, text(state.progress.percent())),
-                        color(Color::CyanLight, gauge(state.progress.value())) | flex,
-                        color(Color::GrayDark,  text(state.progress.suffix)),
+                        text(state.progress.percent()) | color(Color::CyanLight),
+                        gauge(state.progress.value())  | color(Color::CyanLight) | flex,
+                        text(state.progress.suffix)    | color(Color::GrayDark),
                     }),
                     vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
                     hbox({text(L"Results "), hbox(results_line)}),
                 }) | flex,
-                phase({{0, 0}})
+                phase(state.points) | color(Color::GreenLight)
             }),
         });
 }

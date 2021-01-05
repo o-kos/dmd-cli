@@ -14,6 +14,36 @@ public:
         for (int x = 0; x < width;  ++x) pixel(x, height / 2) = symbols[1];
         for (int y = 0; y < height; ++y) pixel(width / 2,  y) = symbols[2];
         pixel(width /2, height / 2) = symbols[3];
+
+        auto paint = [this](dmd::Point p) {
+            static const float delta[2] = { -1e-5, +1e-5 };
+//            p.x = std::clamp(p.x, -1.0f, +1.0f);
+//            p.y = std::clamp(p.y, -1.0f, +1.0f);
+//            p.x = std::clamp(p.x, -1.0f + delta[1], +1.0f + delta[0]);
+//            p.y = std::clamp(p.y, -1.0f + delta[1], +1.0f + delta[0]);
+            p.x = std::clamp(p.x, -1.0f, +1.0f + delta[0]);
+            p.y = std::clamp(p.y, -1.0f, +1.0f + delta[0]);
+            if (p.x == 0) p.x += delta[std::rand() % 2];  // NOLINT(cert-msc30-c, cert-msc50-cpp)
+            if (p.y == 0) p.y += delta[std::rand() % 2];  // NOLINT(cert-msc30-c, cert-msc50-cpp)
+            static const int scale_x = ((width  - 1) / 2) * 2;
+            static const int scale_y = ((height - 1) / 2) * 4;
+            int vx = int(p.x * scale_x + scale_x);
+            int vy = int(p.y * scale_y + scale_y);
+            int cx = int(p.x > 0) + vx / 2;
+            int cy = int(p.y > 0) + vy / 4;
+
+            uint8_t symbol = pixel(cx, cy) - L'\x2800';
+            static const uint8_t masks[4][2] = {
+                {0x01, 0x08},
+                {0x02, 0x10},
+                {0x04, 0x20},
+                {0x40, 0x80},
+            };
+            symbol |= masks[vy % 4][vx % 2];
+            pixel(cx, cy) = L'\x2800' + symbol;
+        };
+
+        for (auto const &p : points) paint(p);
     }
 
     void ComputeRequirement() override {
@@ -26,7 +56,7 @@ public:
             for (int x = box_.x_min; x <= box_.x_max; ++x) {
                 wchar_t c = pixel(x - box_.x_min, y - box_.y_min);
                 screen.at(x, y) = c;
-                if (c < L'\x2800') screen.PixelAt(x, y).foreground_color = Color::Red;
+                if (c < L'\x2800') screen.PixelAt(x, y).foreground_color = Color::Magenta;
             }
         }
     }

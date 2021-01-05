@@ -13,7 +13,7 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     dmd::State state;
 
     state.header.title = L"Processing file";
-    state.header.value = L"~/signals/psk8-wav\x2026";
+    state.header.value = L"~/signals/psk8-wav";
     state.progress.prefix = L"Process";
     state.progress.limit = 4 * 60 * 9600;
     state.params = {{L"freq", L"1800"}, {L"mode", L"PSK-8"}, {L"speed", L"1200"}, {L"interleaver", L"long"}};
@@ -23,15 +23,35 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     std::this_thread::sleep_for(200ms);
     r->render(state);
 
-    const unsigned speed = 32;
+    const unsigned speed = 2;
+    dmd::Point p{-1, -1};
+    dmd::Point shift{2.0f / 40, 2.0f / 32};
+    dmd::PhasePoints points{{ -1, -1 }, {}};
     for (;;) {
         state.push_progress(9600 * 100 / 1000 * speed, nextLoren());
-        state.status.bits += 123;
-        state.status.phase += 324;
+        state.status.bits += 1;
+//        state.push_phase({
+//             {-1.0, -1.0}, {-0.5, -1.0}, {0, -1.0}, {0.5, -1.0}, {1.0, -1.0},
+//             {-1, -1}, {1, -1}, {-1, 1}, {1, 1},
+//             {0.0001, -0.0001}, {-0.0001, -0.0001}, {-0.0001, 0.0001}, {0.0001, 0.0001},    // Near center
+//             {0, 0},                                  // Center
+//             {-1, -1}, {-1, 1}, {1, -1}, {1, 1},      // Corners
+//             {0, -1}, {0, 1}, {-1, 0}, {1, 0},
+//             {-0.000001, -1.0}, {0.000001, -1.0},
+//             {-1.0, -0.000001}, {-1.0, 0.000001},
+//        });
+        state.push_phase({p});
+        p.x += shift.x;
+        if (p.x >= 1) {
+            p.x = -1;
+            p.y += shift.y;
+            if (p.y >= 1) p.y = -1;
+        }
         r->render(state);
+//        state.points.clear();
 
         if (state.progress.position >= state.progress.limit) break;
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(10ms);
     }
 }
 
