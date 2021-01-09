@@ -3,25 +3,23 @@ project(dmd-term)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(FTXUI_DIR "./../FTXUI")
-#add_library(FTXUI STATIC IMPORTED) # or STATIC instead of SHARED
-#set_target_properties(FTXUI PROPERTIES
-#    IMPORTED_LOCATION "${FTXUI_DIR}/lib/libscreen.a"
-#    INTERFACE_INCLUDE_DIRECTORIES "${FTXUI_DIR}/include"
-#    )
-
-#set(APP_SRC "main.cpp")
-#add_executable(dmd-term ${APP_SRC})
-#target_link_libraries(dmd-term PRIVATE FTXUI) # also adds the required include path
-
-#include_directories(${RX_TERM}/include)
+include(FetchContent)
+FetchContent_Declare(ftxui
+        GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+        )
+FetchContent_GetProperties(ftxui)
+if(NOT ftxui_POPULATED)
+    FetchContent_Populate(ftxui)
+    add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 
 set(APP_SRC main.cpp loren.hpp dmd-render.hpp dmd-render.cpp)
 add_executable(dmd-term ${APP_SRC})
-target_include_directories(dmd-term PRIVATE ${FTXUI_DIR}/include)
-target_link_directories(dmd-term PRIVATE ${FTXUI_DIR}/lib)
 target_link_libraries(dmd-term
         PRIVATE screen
         PRIVATE dom
-        PRIVATE component # Not needed for this example.
+#        PRIVATE component # Not needed for this example.
 )
+
+
+#add_subdirectory(tests)

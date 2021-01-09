@@ -23,10 +23,10 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     std::this_thread::sleep_for(200ms);
     r->render(state);
 
-    const unsigned speed = 2;
+    const unsigned speed = 4;
+    dmd::Point shift{2.0f / 80, 2.0f / 64};
     dmd::Point p{-1, -1};
-    dmd::Point shift{2.0f / 40, 2.0f / 32};
-    dmd::PhasePoints points{{ -1, -1 }, {}};
+//    dmd::PhasePoints points{{ -1, -1 }, {}};
     for (;;) {
         state.push_progress(9600 * 100 / 1000 * speed, nextLoren());
         state.status.bits += 1;
