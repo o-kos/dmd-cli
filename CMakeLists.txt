@@ -21,5 +21,4 @@ target_link_libraries(dmd-term
 #        PRIVATE component # Not needed for this example.
 )
 
-
-#add_subdirectory(tests)
+add_subdirectory(tests)

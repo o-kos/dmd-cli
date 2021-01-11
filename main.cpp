@@ -26,20 +26,9 @@ int main(int /*argc*/, const char** /*argv[]*/) {
     const unsigned speed = 4;
     dmd::Point shift{2.0f / 80, 2.0f / 64};
     dmd::Point p{-1, -1};
-//    dmd::PhasePoints points{{ -1, -1 }, {}};
     for (;;) {
         state.push_progress(9600 * 100 / 1000 * speed, nextLoren());
         state.status.bits += 1;
-//        state.push_phase({
-//             {-1.0, -1.0}, {-0.5, -1.0}, {0, -1.0}, {0.5, -1.0}, {1.0, -1.0},
-//             {-1, -1}, {1, -1}, {-1, 1}, {1, 1},
-//             {0.0001, -0.0001}, {-0.0001, -0.0001}, {-0.0001, 0.0001}, {0.0001, 0.0001},    // Near center
-//             {0, 0},                                  // Center
-//             {-1, -1}, {-1, 1}, {1, -1}, {1, 1},      // Corners
-//             {0, -1}, {0, 1}, {-1, 0}, {1, 0},
-//             {-0.000001, -1.0}, {0.000001, -1.0},
-//             {-1.0, -0.000001}, {-1.0, 0.000001},
-//        });
         state.push_phase({p});
         p.x += shift.x;
         if (p.x >= 1) {
@@ -48,86 +37,9 @@ int main(int /*argc*/, const char** /*argv[]*/) {
             if (p.y >= 1) p.y = -1;
         }
         r->render(state);
-//        state.points.clear();
 
         if (state.progress.position >= state.progress.limit) break;
         std::this_thread::sleep_for(10ms);
     }
 }
-
-
-
-//#include <chrono>
-//#include <cmath>
-//#include <ftxui/dom/elements.hpp>
-//#include <ftxui/screen/screen.hpp>
-//#include <ftxui/screen/string.hpp>
-//#include <iostream>
-//#include <thread>
-//
-//class Graph {
-//public:
-//    std::vector<int> operator()(int width, int height) {
-//        std::vector<int> output(width);
-//        for (int i = 0; i < width; ++i) {
-//            float v = 0;
-//            v += 0.1f * sin((i + shift) * 0.1f);
-//            v += 0.2f * sin((i + shift + 10) * 0.15f);
-//            v += 0.1f * sin((i + shift) * 0.03f);
-//            v *= height;
-//            v += 0.5f * height;
-//            output[i] = static_cast<int>(v);
-//        }
-//        return output;
-//    }
-//    int shift = 0;
-//};
-//
-//std::vector<int> triangle(int width, int height) {
-//    std::vector<int> output(width);
-//    for (int i = 0; i < width; ++i) {
-//        output[i] = i % (height - 4) + 2;
-//    }
-//    return output;
-//}
-//
-//int main(int argc, const char* argv[]) {
-//    using namespace ftxui;
-//    using namespace std::chrono_literals;
-//
-//    Graph my_graph;
-//
-//    std::string reset_position;
-//    for (int i = 0;; ++i) {
-//        auto document =
-//                hbox({
-//                             vbox({
-//                                          graph(std::ref(my_graph)),
-//                                          separator(),
-//                                          graph(triangle) | inverted,
-//                                  }) | flex,
-//                             separator(),
-//                             vbox({
-//                                          graph(std::ref(my_graph)) | color(Color::BlueLight),
-//                                          separator(),
-//                                          graph(std::ref(my_graph)) | color(Color::RedLight),
-//                                          separator(),
-//                                          graph(std::ref(my_graph)) | color(Color::YellowLight),
-//                                  }) | flex,
-//                     }) |
-//                border | size(HEIGHT, GREATER_THAN, 40);
-//
-//        auto screen = Screen::Create(Dimension::Full(), Dimension::Fit(document));
-//        Render(screen, document);
-//        std::cout << reset_position << screen.ToString() << std::flush;
-//
-//        reset_position = screen.ResetPosition();
-//
-//        std::this_thread::sleep_for(0.03s);
-//        my_graph.shift++;
-//    }
-//
-//    return 0;
-//}
-
 
