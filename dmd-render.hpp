@@ -92,11 +92,16 @@ struct State {
 
     State() : start{std::chrono::steady_clock::now()} {}
 
-    void push_progress(unsigned shift, const std::wstring &log_line) {
+    void push_progress(unsigned shift) {
+        using namespace std::chrono;
+        auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
+        progress.update(cur_ms, shift);
+    }
+
+    void push_log(const std::wstring &log_line) {
         using namespace std::chrono;
         auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
         log.push(cur_ms, log_line);
-        progress.update(cur_ms, shift);
     }
 
     void push_phase(const dmd::PhasePoints &p) {
