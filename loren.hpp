@@ -2,7 +2,7 @@
 
 #include <string>
 
-std::wstring nextLoren() {
+std::wstring loren() {
     static const wchar_t *lorens[] = {
         L"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         L"Nunc at metus et dui fringilla elementum.",
