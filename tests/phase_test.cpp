@@ -6,9 +6,8 @@
 using namespace std;
 using namespace ftxui;
 
-::testing::AssertionResult IsPhaseCorrect(const Element &phase, const wstring &pattern)
-{
-    static const array<wstring, 9> phase_screen{
+static array<wstring, 9> phase_screen() {
+    static const array<wstring, 9> screen{
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -19,9 +18,13 @@ using namespace ftxui;
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
     };
+    return screen;
+}
 
-    const auto h = phase_screen.size();
-    const auto w = phase_screen[0].size();
+::testing::AssertionResult IsPhaseCorrect(const Element &phase, const wstring &pattern)
+{
+    const auto h = phase_screen().size();
+    const auto w = phase_screen()[0].size();
 
     auto ph = pattern.size() / w + int(pattern.size() % w != 0);
     if (ph != h)
@@ -91,16 +94,26 @@ TEST(PhaseTest, EmptyPoints) {                  // NOLINT(cert-err58-cpp)
 }
 
 TEST(PhaseTest, CenterPoint) {                  // NOLINT(cert-err58-cpp)
-    const wstring center = L""
+    wstring center = L""
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢼⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤"
-        "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+        "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀";
+    static const wchar_t cp[] = L"⢀⠈⡀⠁";
+
+    const auto h = phase_screen().size();
+    const auto w = phase_screen()[0].size();
+
+    srand(0);                                   // NOLINT(cert-msc51-cpp)
+    auto x = 2 * (rand() % 2) - 1;              // NOLINT(cert-msc30-c, cert-msc50-cpp)
+    auto y = 2 * (rand() % 2) - 1;              // NOLINT(cert-msc30-c, cert-msc50-cpp)
+    center[w / 2 + x + (h / 2 + y) * w] = cp[x + 1 + (y + 1) * 2];
+    srand(0);                                   // NOLINT(cert-msc51-cpp)
     EXPECT_TRUE(IsPhaseCorrect(phase({{0, 0}}), center));
 }
 

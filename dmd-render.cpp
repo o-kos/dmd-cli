@@ -16,7 +16,7 @@ public:
         pixel(width /2, height / 2) = symbols[3];
 
         auto paint = [this](dmd::Point p) {
-            static const float delta[2] = { -1e-5, +1e-5 };
+            static const float delta[2] = {-1e-5, +1e-5};
             p.x = std::clamp(p.x, -1.0f, +1.0f + delta[0]);
             p.y = std::clamp(p.y, -1.0f, +1.0f + delta[0]);
             if (p.x == 0) p.x += delta[std::rand() % 2];  // NOLINT(cert-msc30-c, cert-msc50-cpp)
