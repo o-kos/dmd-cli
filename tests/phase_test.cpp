@@ -1,4 +1,4 @@
-#include "dmd-render.hpp"
+#include "dmd-state.hpp"
 #include "gtest/gtest.h"
 
 #include <ftxui/screen/string.hpp>

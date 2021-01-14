@@ -1,5 +1,8 @@
 #pragma once
 
+#include "dmd-state.hpp"
+#include <ftxui/dom/elements.hpp>
+
 #include <cmath>
 #include <string>
 #include <chrono>
@@ -7,16 +10,7 @@
 #include <cmath>
 #include <iomanip>
 #include <complex>
-
-#include <ftxui/dom/elements.hpp>
 #include <queue>
-
-namespace dmd {
-    struct Point {
-        float x, y;
-    };
-    using PhasePoints = std::vector<Point>;
-}
 
 namespace ftxui {
     Element phase(const dmd::PhasePoints &);
@@ -24,111 +18,24 @@ namespace ftxui {
 
 namespace dmd {
 
-struct State {
-    static std::wstring to_ws(std::chrono::milliseconds ms) {
-        using namespace std::chrono;
-        seconds s = duration_cast<seconds>(ms);
-        minutes m = duration_cast<minutes>(ms);
-        hours   h = duration_cast<hours>(ms);
-        wchar_t buf[6];
-        swprintf(buf, sizeof(buf), L"%.2d:%.2d", m.count() % 60, s.count() % 60);
-        std::wstring ts{buf};
-        if (h.count() > 0) ts.insert(0, std::to_wstring(h.count()) + L':');
-        return ts;
-    };
-
-    std::vector<std::pair<std::wstring, std::wstring>> params;
-
-    struct {
-        std::wstring title;
-        std::wstring value;
-    } header;
-
-    struct Log {
-        std::vector<std::pair<std::wstring, std::wstring>> buffer;
-
-        void push(std::chrono::milliseconds cur_ms, const std::wstring &line) {
-            auto timestamp = to_ws(cur_ms) + L' ';
-            if (buffer.size() > 100) buffer.erase(buffer.begin());
-            buffer.emplace_back(timestamp, line);
-        }
-    } log;
-
-    struct Progress {
-        std::wstring prefix;
-        unsigned position;
-        unsigned limit;
-        std::wstring suffix;
-
-        Progress() : position{0}, limit{0} {}
-
-        [[nodiscard]] auto value() const { return (limit) ? std::min(100.0f, float(position) / float(limit)) : 0; }
-
-        [[nodiscard]] std::wstring percent() const {
-            wchar_t buf[6];
-            swprintf(buf, sizeof(buf), L"%3d%% ", std::lround(value() * 100));
-            return buf;
-        }
-
-        void update(std::chrono::milliseconds cur_ms, unsigned shift) {
-            using namespace std::chrono;
-            position += shift;
-            milliseconds eta_ms{std::lround(cur_ms.count() / value())};
-            if (cur_ms > eta_ms) eta_ms = cur_ms;
-            std::wstringstream ss;
-            ss << std::fixed << std::setprecision(1) << position * 1000.0 / cur_ms.count();
-
-            suffix = L" " + to_ws(cur_ms) + L"<" + to_ws(eta_ms) + L", " + ss.str() + L"it/s ";
-        }
-    } progress;
-
-    struct Status {
-        int bits, text, phase;
-        Status() : bits{0}, text{0}, phase{0} {}
-    } status;
-
-    dmd::PhasePoints points;
-    std::chrono::steady_clock::time_point start;
-
-    State() : start{std::chrono::steady_clock::now()} {}
-
-    void push_progress(unsigned shift, const std::wstring &log_line) {
-        using namespace std::chrono;
-        auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
-        log.push(cur_ms, log_line);
-        progress.update(cur_ms, shift);
-    }
-
-    void push_phase(const dmd::PhasePoints &p) {
-        points.insert(points.end(), p.begin(), p.end());
-        status.phase += p.size();
-    }
-};
-
-static auto make_doc(const State &state) {
+static auto make_doc(const dmd::State &state) {
     using namespace ftxui;
     static const unsigned pw = 21, ph = 9;
     Elements log_lines;
     const auto &lines = state.log.buffer;
     for (auto it = lines.cend() - std::min<unsigned>(lines.size(), ph - 4); it < lines.end(); ++it) {
         auto line = *it;
-//TODO Add tripoints for long lines
-//        for (int x = 0; x < std::min<unsigned>(line.size(), maxWidth); ++x)
-//            image(x, y).c = line[x];
-//        if (line.size() > maxWidth) {
-//            image(maxWidth - 1, y).c = '…';
-//        }
         log_lines.push_back(hbox({
             color(Color::GrayDark, text(line.first)),
-            color(Color::Cyan, text(line.second))
+            color(Color::Cyan,     text(line.second))
         }));
     }
 
     auto push_status = [](Elements &e, const std::wstring &title, const std::wstring &value, Color c) {
         e.push_back(hbox({
-            text(L"·")          | color(c),
-            text(title + L" ")  | color(Color::GrayDark),
-            text(value)         | color(c)
+            text(L"·")         | color(c),
+            text(title + L" ") | color(Color::GrayDark),
+            text(value)        | color(c)
         }));
         e.push_back(text(L" ⁞ ") | color(Color::GrayDark));
     };
@@ -142,8 +49,8 @@ static auto make_doc(const State &state) {
     auto push_result = [&](const std::wstring &title, int value) {
         if (value >= 0) push_status(results_line, title, std::to_wstring(value), Color::GreenLight);
     };
-    push_result(L"bits",  state.status.bits);
-    push_result(L"text",  state.status.text);
+    push_result(L"bits", state.status.bits);
+    push_result(L"text", state.status.text);
     push_result(L"phase", state.status.phase);
     results_line.pop_back();
 
@@ -151,7 +58,7 @@ static auto make_doc(const State &state) {
         vbox({
             hbox({
                 vbox({
-                    hbox({text(state.header.title + L" "), color(Color::DarkGreen, text(state.header.value))}),
+                    hbox({text(state.header.title + L" "), text(state.header.value) | color(Color::DarkGreen)}),
                     hbox({text(L"Params "), hbox(params_line)}),
                     hbox({
                         text(state.progress.prefix + L" "),
@@ -171,19 +78,18 @@ class StateRender {
 public:
     StateRender() = default;
     virtual ~StateRender() = default;
-    virtual void render(const State &state) const = 0;
+    virtual void render(const dmd::State &state) const = 0;
 };
 
 class TuiRender : public StateRender {
 public:
-    TuiRender() : StateRender() {
-    }
+    TuiRender() : StateRender() {}
 
     ~TuiRender() override {
         std::cout << "\x1B[?25h" << std::flush;
     }
 
-    void render(const State &state) const override {
+    void render(const dmd::State &state) const override {
         using namespace ftxui;
         static Dimension d{-1, -1};
         if (d.dimx == -1) {

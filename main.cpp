@@ -1,8 +1,8 @@
-#include <chrono>
-#include <thread>
-
-#include "loren.hpp"
+#include "dmd-state.hpp"
 #include "dmd-render.hpp"
+#include "loren.hpp"
+
+#include <thread>
 
 using namespace std;
 using namespace chrono;
