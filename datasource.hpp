@@ -49,20 +49,20 @@ public:
         return true;
     }
 
-    bool points(dmd::PhasePoints &points) {
+    bool points(dmd::PhasePoints &pts) {
         if (std::chrono::steady_clock::now() < times.next) return false;
 
         auto tick_node = burst_node.first_child().first_child();
         auto points_node = tick_node.next_sibling();
-        points.clear();
-        points.reserve(points_node.num_children());
+        pts.clear();
+        pts.reserve(points_node.num_children());
         for (auto pn : points_node) {
             auto px_node = pn.first_child();
             auto py_node = px_node.next_sibling();
             float px, py;
             c4::atof(px_node.val(), &px);
             c4::atof(py_node.val(), &py);
-            points.push_back({px, py});
+            pts.push_back({px, py});
         }
         return true;
     }

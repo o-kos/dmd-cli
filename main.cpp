@@ -1,5 +1,4 @@
 #include "datasource.hpp"
-#include "dmd-render.hpp"
 
 #include <chrono>
 #include <thread>
@@ -41,7 +40,6 @@ int main(int /*argc*/, const char *argv[])
         }
         r->render(state);
 
-        state.points.clear();
         std::this_thread::sleep_for(100ms);
     }
 

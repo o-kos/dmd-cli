@@ -13,7 +13,7 @@ if(NOT ftxui_POPULATED)
     add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-set(APP_SRC main.cpp loren.hpp datasource.hpp dmd-render.hpp dmd-render.cpp)
+set(APP_SRC main.cpp datasource.hpp dmd-render.hpp dmd-render.cpp dmd-state.hpp loren.hpp)
 add_executable(dmd-term ${APP_SRC})
 target_link_libraries(dmd-term
     PRIVATE screen
