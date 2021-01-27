@@ -10,7 +10,7 @@ public:
 
     explicit PhaseDiagram(const dmd::PhaseData &data) : Node() {
         static const wchar_t symbols[] = L"\x2800\x2500\x2502\x253C"; // "⠀─│┼"
-        canvas.fill({symbols[0], Color::Default});
+        canvas.fill({0, symbols[0]});
 
         auto paint = [this](dmd::Point p, int color_index) {
             static const float delta[2] = { -1e-5, +1e-5 };
@@ -55,7 +55,7 @@ public:
     void Render(Screen &screen) override {
         auto draw_axes = [=](int x, int y, Pixel &pixel) {
             static const wchar_t symbols[] = L"\x2800\x2500\x2502\x253C"; // "⠀─│┼"
-            auto idx = int(x == width / 2) + 2 * (y == height / 2);
+            auto idx = int(y == height / 2) + 2 * int(x == width / 2);
             if (!idx) return false;
             pixel.foreground_color = Color::Magenta;
             pixel.character = symbols[idx];
@@ -66,7 +66,7 @@ public:
         for (int y = box_.y_min; y <= box_.y_max; ++y) {
             for (int x = box_.x_min; x <= box_.x_max; ++x) {
                 auto &px = screen.PixelAt(x, y);
-                if (!draw_axes(x, y, px)) {
+                if (!draw_axes(x - box_.x_min, y - box_.y_min, px)) {
                     auto rpx = pixel(x - box_.x_min, y - box_.y_min);
                     px.character = rpx.symbol;
                     px.foreground_color = colors[
