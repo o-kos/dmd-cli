@@ -4,6 +4,8 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/ftxui-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/tests/googletest-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ext/FTXUI" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ext/googletest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ext/rapidyaml" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ext/rapidyaml/ext/c4core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ext/rapidyaml/ext/c4core/cmake" vcs="Git" />
