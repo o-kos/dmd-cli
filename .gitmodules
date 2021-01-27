@@ -1,3 +1,9 @@
 [submodule "ext/rapidyaml"]
 	path = ext/rapidyaml
 	url = https://github.com/biojppm/rapidyaml.git
+[submodule "ext/googletest"]
+	path = ext/googletest
+	url = git@github.com:google/googletest.git
+[submodule "ext/FTXUI"]
+	path = ext/FTXUI
+	url = https://github.com/ArthurSonzogni/FTXUI.git
