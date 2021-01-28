@@ -105,7 +105,7 @@ TEST(PhaseTest, CenterPoint) {                  // NOLINT(cert-err58-cpp)
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀";
-    static const wchar_t cp[] = L"⢀⠈⡀⠁";
+    static const wchar_t cp[] = L"⢀⡀⠈⠁";
 
     const auto h = phase_screen().size();
     const auto w = phase_screen()[0].size();
@@ -113,7 +113,7 @@ TEST(PhaseTest, CenterPoint) {                  // NOLINT(cert-err58-cpp)
     srand(0);                                   // NOLINT(cert-msc51-cpp)
     auto x = 2 * (rand() % 2) - 1;              // NOLINT(cert-msc30-c, cert-msc50-cpp)
     auto y = 2 * (rand() % 2) - 1;              // NOLINT(cert-msc30-c, cert-msc50-cpp)
-    center[w / 2 + x + (h / 2 + y) * w] = cp[x + 1 + (y + 1) * 2];
+    center[w / 2 + x + (h / 2 + y) * w] = cp[(x + 1) / 2 + (y + 1)];
     srand(0);                                   // NOLINT(cert-msc51-cpp)
     EXPECT_TRUE(IsPhaseCorrect(phase({{0, 0}}), center));
 }
