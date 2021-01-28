@@ -66,7 +66,7 @@ TEST(PhaseTest, InvalidPatternSize) {           // NOLINT(cert-err58-cpp)
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢼⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀";
-    EXPECT_FALSE(IsPhaseCorrect(phase({}), small_height));
+    EXPECT_FALSE(IsPhaseCorrect(phase(), small_height));
     const wstring big_height = L""
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
@@ -77,7 +77,7 @@ TEST(PhaseTest, InvalidPatternSize) {           // NOLINT(cert-err58-cpp)
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀+++";
-    EXPECT_FALSE(IsPhaseCorrect(phase({}), big_height));
+    EXPECT_FALSE(IsPhaseCorrect(phase(), big_height));
 }
 
 TEST(PhaseTest, EmptyPoints) {                  // NOLINT(cert-err58-cpp)
@@ -91,7 +91,7 @@ TEST(PhaseTest, EmptyPoints) {                  // NOLINT(cert-err58-cpp)
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀";
-    EXPECT_TRUE(IsPhaseCorrect(phase({}), empty));
+    EXPECT_TRUE(IsPhaseCorrect(phase(), empty));
 }
 
 TEST(PhaseTest, CenterPoint) {                  // NOLINT(cert-err58-cpp)

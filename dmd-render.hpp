@@ -5,7 +5,9 @@
 //#include <queue>
 
 namespace ftxui {
+    Element phase();
     Element phase(const dmd::PhaseData &);
+    Element phase(const dmd::PhasePoints &);
 }
 
 namespace dmd {

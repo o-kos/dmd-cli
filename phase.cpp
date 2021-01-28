@@ -47,6 +47,14 @@ public:
         }
     }
 
+    explicit PhaseDiagram(const dmd::PhasePoints &points)
+        : PhaseDiagram({{std::chrono::steady_clock::now(), points}}) {
+    }
+
+    PhaseDiagram()
+        : PhaseDiagram({{std::chrono::steady_clock::now(), {}}}) {
+    }
+
     void ComputeRequirement() override {
         requirement_.min_x = width;
         requirement_.min_y = height;
@@ -88,6 +96,14 @@ private:
 
 Element phase(const dmd::PhaseData &data) {
     return std::make_shared<PhaseDiagram>(data);
+}
+
+Element phase(const dmd::PhasePoints &points) {
+    return std::make_shared<PhaseDiagram>(points);
+}
+
+Element phase() {
+    return std::make_shared<PhaseDiagram>();
 }
 
 }
