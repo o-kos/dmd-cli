@@ -81,8 +81,8 @@ struct State {
     struct Points {
         PhaseData data;
 
-        void push(const dmd::PhasePoints &pts) {
-            auto timestamp = std::chrono::steady_clock::now();
+        void push(const dmd::PhasePoints &pts, std::chrono::milliseconds shift = std::chrono::milliseconds::zero()) {
+            auto timestamp = std::chrono::steady_clock::now() + shift;
             if (pts.size() > 100) data.erase(data.begin());
             data.emplace_back(timestamp, pts);
         }
@@ -104,8 +104,8 @@ struct State {
         log.push(cur_ms, line);
     }
 
-    void push_phase(const dmd::PhasePoints &pts) {
-        points.push(pts);
+    void push_phase(const dmd::PhasePoints &pts, std::chrono::milliseconds shift = std::chrono::milliseconds::zero()) {
+        points.push(pts, shift);
         status.phase += pts.size();
     }
 };

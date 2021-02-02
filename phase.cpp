@@ -70,16 +70,16 @@ public:
             return true;
         };
 
-        static const Color colors[] = { Color::Default, Color::White, Color::GrayLight, Color::GrayDark};
+        static const Color colors[] = {Color::Default, Color::White, Color::GrayLight, Color::GrayDark};
         for (int y = box_.y_min; y <= box_.y_max; ++y) {
             for (int x = box_.x_min; x <= box_.x_max; ++x) {
                 auto &px = screen.PixelAt(x, y);
                 if (!draw_axes(x - box_.x_min, y - box_.y_min, px)) {
                     auto rpx = pixel(x - box_.x_min, y - box_.y_min);
-                    px.character = rpx.symbol;
-                    px.foreground_color = colors[
-                        std::min<unsigned>(rpx.color_index, sizeof(colors) / sizeof(colors[0]))
-                    ];
+                    if (rpx.color_index < sizeof(colors) / sizeof(colors[0])) {
+                        px.character = rpx.symbol;
+                        px.foreground_color = colors[rpx.color_index];
+                    }
                 }
             }
         }

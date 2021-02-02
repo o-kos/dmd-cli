@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace ftxui;
+using namespace std::chrono;
 
 static array<wstring, 9> phase_screen() {
     static const array<wstring, 9> screen{
@@ -146,3 +147,64 @@ TEST(PhaseTest, CornersPoints) {                // NOLINT(cert-err58-cpp)
     EXPECT_TRUE(IsPhaseCorrect(phase({{-1, -1}, {-1, 1}, {1, -1}, {1, 1}}), corners));
 }
 
+dmd::State mock_state(const vector<pair<milliseconds, dmd::PhasePoints>> &data) {
+    dmd::State state;
+    for (const auto &d : data)
+        state.push_phase(d.second, d.first);
+    return state;
+}
+
+struct TestColorPixel {
+    int x, y;
+    unsigned color_index;
+};
+
+::testing::AssertionResult IsColorCorrect(const Element &phase, const vector<TestColorPixel> &pixels)
+{
+    const auto h = phase_screen().size();
+    const auto w = phase_screen()[0].size();
+    static const Color colors[] = {Color::Default, Color::White, Color::GrayLight, Color::GrayDark};
+
+    Screen screen(w, h);
+    Render(screen, phase);
+
+    for (const auto &p : pixels) {
+        auto ps = screen.PixelAt(p.x, p.y);
+        if (ps.character == phase_screen()[0][0])
+            return ::testing::AssertionFailure() << "pixel at [" << p.x << ", " << p.y << "] is empty";
+        if (ps.foreground_color != colors[p.color_index])
+            return ::testing::AssertionFailure()
+                << "pixel color at [" << p.x << ", " << p.y << "] = "
+                << colors[p.color_index].Print(false)
+                << " is not "
+                << ps.foreground_color.Print(false);
+    }
+
+    return ::testing::AssertionSuccess();
+}
+
+TEST(PhaseTest, CurrentColor) {                 // NOLINT(cert-err58-cpp)
+    auto state = mock_state({{milliseconds::zero(), {{-1, -1}}}});
+    EXPECT_TRUE(IsColorCorrect(
+        phase(state.points.data),
+        {{0, 0, 0}}
+    ));
+}
+
+TEST(PhaseTest, SimplePastColors) {             // NOLINT(cert-err58-cpp)
+    auto state = mock_state({
+        {1555ms, {{-0.67, -1.00}}},
+        {1111ms, {{-0.78, -1.00}}},
+        { 555ms, {{-0.89, -1.00}}},
+        { 111ms, {{-1.00, -1.00}}}
+    });
+    EXPECT_TRUE(IsColorCorrect(
+        phase(state.points.data),
+        {
+            {1, 0, 0},
+            {0, 0, 1},
+            {0, 0, 2},
+            {0, 0, 3},
+        }
+    ));
+}
