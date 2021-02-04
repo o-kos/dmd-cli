@@ -58,7 +58,7 @@ static auto make_doc(const State &state) {
         vbox({
             hbox({
                 vbox({
-                    hbox({text(state.header.title + L" "), color(Color::DarkGreen, text(state.header.value))}),
+                    hbox({text(state.header.title + L" "), text(state.header.value) | color(Color::DarkGreen)}),
                     hbox({text(L"Params "), hbox(params_line)}),
                     hbox({
                         text(state.progress.prefix + L" "),
@@ -69,7 +69,7 @@ static auto make_doc(const State &state) {
                     vbox(log_lines) | size(HEIGHT, EQUAL, ph - 4),
                     hbox({text(L"Results "), hbox(results_line)}),
                 }) | flex,
-                phase(state.points.data) | color(Color::GreenLight)
+                phase(state.points.data) | color(Color::Magenta)
             }),
         });
 }

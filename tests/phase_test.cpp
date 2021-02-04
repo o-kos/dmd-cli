@@ -163,7 +163,7 @@ struct TestColorPixel {
 {
     const auto h = phase_screen().size();
     const auto w = phase_screen()[0].size();
-    static const Color colors[] = {Color::Default, Color::White, Color::GrayLight, Color::GrayDark};
+    static const Color colors[] = {Color::YellowLight, Color::Yellow, Color::GrayLight, Color::GrayDark};
 
     Screen screen(w, h);
     Render(screen, phase);
@@ -176,7 +176,7 @@ struct TestColorPixel {
             return ::testing::AssertionFailure()
                 << "pixel color at [" << p.x << ", " << p.y << "] = "
                 << colors[p.color_index].Print(false)
-                << " is not "
+                << ", but not "
                 << ps.foreground_color.Print(false);
     }
 
@@ -193,18 +193,18 @@ TEST(PhaseTest, CurrentColor) {                 // NOLINT(cert-err58-cpp)
 
 TEST(PhaseTest, SimplePastColors) {             // NOLINT(cert-err58-cpp)
     auto state = mock_state({
-        {1555ms, {{-0.67, -1.00}}},
-        {1111ms, {{-0.78, -1.00}}},
-        { 555ms, {{-0.89, -1.00}}},
-        { 111ms, {{-1.00, -1.00}}}
+        {-1555ms, {{-0.67, -1.00}}},
+        {-1111ms, {{-0.78, -1.00}}},
+        { -555ms, {{-0.89, -1.00}}},
+        { -111ms, {{-1.00, -1.00}}}
     });
     EXPECT_TRUE(IsColorCorrect(
         phase(state.points.data),
         {
-            {1, 0, 0},
-            {0, 0, 1},
-            {0, 0, 2},
-            {0, 0, 3},
+            {3, 0, 3},
+            {2, 0, 2},
+            {1, 0, 1},
+            {0, 0, 0},
         }
     ));
 }
