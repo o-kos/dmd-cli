@@ -1,5 +1,7 @@
 #include "dmd-state.hpp"
 #include "dmd-render.hpp"
+#include "phase.hpp"
+
 #include "gtest/gtest.h"
 
 #include <ftxui/screen/string.hpp>
@@ -8,8 +10,8 @@ using namespace std;
 using namespace ftxui;
 using namespace std::chrono;
 
-static array<wstring, 9> phase_screen() {
-    static const array<wstring, 9> screen{
+auto &phase_screen() {
+    static const array<wstring, phase_cfg::height> screen{
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
             L"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -163,7 +165,6 @@ struct TestColorPixel {
 {
     const auto h = phase_screen().size();
     const auto w = phase_screen()[0].size();
-    static const Color colors[] = {Color::YellowLight, Color::Yellow, Color::GrayLight, Color::GrayDark};
 
     Screen screen(w, h);
     Render(screen, phase);
@@ -172,10 +173,10 @@ struct TestColorPixel {
         auto ps = screen.PixelAt(p.x, p.y);
         if (ps.character == phase_screen()[0][0])
             return ::testing::AssertionFailure() << "pixel at [" << p.x << ", " << p.y << "] is empty";
-        if (ps.foreground_color != colors[p.color_index])
+        if (ps.foreground_color != phase_cfg::palette()[p.color_index])
             return ::testing::AssertionFailure()
                 << "pixel color at [" << p.x << ", " << p.y << "] = "
-                << colors[p.color_index].Print(false)
+                << phase_cfg::palette()[p.color_index].Print(false)
                 << ", but not "
                 << ps.foreground_color.Print(false);
     }

@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory("ext/FTXUI")
 
-set(APP_SRC main.cpp datasource.hpp dmd-render.hpp dmd-state.hpp loren.hpp phase.cpp)
+set(APP_SRC main.cpp datasource.hpp dmd-render.hpp dmd-state.hpp loren.hpp phase.hpp phase.cpp)
 add_executable(dmd-term ${APP_SRC})
 target_link_libraries(dmd-term
     PRIVATE screen

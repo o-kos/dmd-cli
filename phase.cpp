@@ -1,15 +1,15 @@
+#include "phase.hpp"
 #include "ftxui/dom/elements.hpp"
 #include "dmd-render.hpp"
 
 namespace ftxui {
 
+using namespace phase_cfg;
+
 class PhaseDiagram : public Node {
 public:
-    static const int width  = 21;       //FIXME Move to phase.hpp constant
-    static const int height = 9;        //FIXME Move to phase.hpp constant
 
     explicit PhaseDiagram(const dmd::PhaseData &data) : Node() {
-        static const wchar_t symbols[] = L"\x2800\x2500\x2502\x253C"; // "⠀─│┼"  //FIXME Move to phase.hpp constant
         canvas.fill({0, symbols[0]});
 
         auto paint = [this](dmd::Point p, int color_index) {
@@ -26,7 +26,7 @@ public:
             int cy = int(p.y > 0) + vy / 4;
 
             auto &px = pixel(cx, cy);
-            uint8_t symbol = px.symbol - L'\x2800';   //FIXME Use constant from phase.hpp
+            uint8_t symbol = px.symbol - symbols[0];
             static const uint8_t masks[4][2] = {
                 {0x01, 0x08},
                 {0x02, 0x10},
@@ -34,15 +34,15 @@ public:
                 {0x40, 0x80},
             };
             symbol |= masks[vy % 4][vx % 2];
-            px.symbol = wchar_t(L'\x2800' + symbol);  //FIXME Use constant from phase.hpp
+            px.symbol = wchar_t(symbols[0] + symbol);
             px.color_index = color_index;
         };
 
         using namespace std::chrono;
         for (auto const &d : data) {
             auto ms = duration_cast<milliseconds>(steady_clock::now() - d.first).count();
-            auto idx = ms / 500;   //FIXME Move to phase.hpp constant
-            if (idx >= 5) break;                //FIXME Move to phase.hpp constant
+            auto idx = ms / fade_time.count();
+            if (idx >= palette().size()) break;
             for (auto const &p : d.second) paint(p, idx);
         }
     }
@@ -62,22 +62,20 @@ public:
 
     void Render(Screen &screen) override {
         auto draw_axes = [=](int x, int y, Pixel &pixel) {
-            static const wchar_t symbols[] = L"\x2800\x2500\x2502\x253C"; // "⠀─│┼"     //FIXME Use constant from phase.hpp
             auto idx = int(y == height / 2) + 2 * int(x == width / 2);
             if (!idx) return false;
             pixel.character = symbols[idx];
             return true;
         };
 
-        static const Color colors[] = {Color::YellowLight, Color::Yellow, Color::GrayLight, Color::GrayDark};
         for (int y = box_.y_min; y <= box_.y_max; ++y) {
             for (int x = box_.x_min; x <= box_.x_max; ++x) {
                 auto &px = screen.PixelAt(x, y);
                 if (!draw_axes(x - box_.x_min, y - box_.y_min, px)) {
                     auto rpx = pixel(x - box_.x_min, y - box_.y_min);
-                    if (rpx.color_index < sizeof(colors) / sizeof(colors[0])) {
+                    if (rpx.color_index < palette().size()) {
                         px.character = rpx.symbol;
-                        px.foreground_color = colors[rpx.color_index];
+                        px.foreground_color = palette()[rpx.color_index];
                     }
                 }
             }
