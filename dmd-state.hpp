@@ -51,9 +51,18 @@ struct State {
             return buf;
         }
 
-        void update(std::chrono::milliseconds cur_ms, unsigned shift) {
-            using namespace std::chrono;
+        void inc(std::chrono::milliseconds cur_ms, unsigned shift) {
             position += shift;
+            update(cur_ms);
+        }
+
+        void set(std::chrono::milliseconds cur_ms, unsigned value) {
+            position = value;
+            update(cur_ms);
+        }
+
+        void update(std::chrono::milliseconds cur_ms) {
+            using namespace std::chrono;
             milliseconds eta_ms{std::lround(cur_ms.count() / value())};
             if (cur_ms > eta_ms) eta_ms = cur_ms;
             std::wstringstream ss;
@@ -94,7 +103,13 @@ struct State {
     void push_progress(unsigned shift) {
         using namespace std::chrono;
         auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
-        progress.update(cur_ms, shift);
+        progress.inc(cur_ms, shift);
+    }
+
+    void set_progress(unsigned value) {
+        using namespace std::chrono;
+        auto cur_ms = duration_cast<milliseconds>(steady_clock::now() - start);
+        progress.set(cur_ms, value);
     }
 
     void push_log(const std::wstring &line) {

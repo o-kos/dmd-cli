@@ -32,10 +32,12 @@ int main(int /*argc*/, const char *argv[])
         state.status.bits += 1;
         state.push_progress(100 * speed);
         if (state.status.bits % 10 == 0) state.push_log(src.log());
-        if (src.points(points)) {
+        unsigned progress;
+        if (src.points(points, progress)) {
             state.push_phase(points);
             state.push_log(src.log());
             state.status.phase += points.size();
+            state.set_progress(progress);
             flag = src.next();
         }
         r->render(state);

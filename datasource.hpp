@@ -49,7 +49,7 @@ public:
         return true;
     }
 
-    bool points(dmd::PhasePoints &pts) {
+    bool points(dmd::PhasePoints &pts, unsigned &ms) {
         if (std::chrono::steady_clock::now() < times.next) return false;
 
         auto tick_node = burst_node.first_child().first_child();
@@ -64,6 +64,7 @@ public:
             c4::atof(py_node.val(), &py);
             pts.push_back({px, py});
         }
+        ms = times.ms_next.count();
         return true;
     }
 
@@ -80,14 +81,15 @@ private:
         std::chrono::steady_clock::time_point start;
         std::chrono::steady_clock::time_point next;
         std::chrono::steady_clock::time_point finish;
+        std::chrono::milliseconds ms_next;
         [[nodiscard]] unsigned duration() const {
-            return std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() + 1000;
+            return std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
         }
         void update_next(ryml::NodeRef node) {
             unsigned t;
             c4::atou(node.val(), &t);
-            next = start + std::chrono::milliseconds(t);
-//            std::cout << std::endl << start << " " << std::chrono::steady_clock::now() << " " << next << "  " << finish << std::endl;
+            ms_next = std::chrono::milliseconds(t);
+            next = start + ms_next;
         }
     } times;
 };
