@@ -158,7 +158,7 @@ dmd::State mock_state(const vector<pair<milliseconds, dmd::PhasePoints>> &data) 
 
 struct TestColorPixel {
     int x, y;
-    unsigned color_index;
+    int color_index;
 };
 
 ::testing::AssertionResult IsColorCorrect(const Element &phase, const vector<TestColorPixel> &pixels)
@@ -171,9 +171,9 @@ struct TestColorPixel {
 
     for (const auto &p : pixels) {
         auto ps = screen.PixelAt(p.x, p.y);
-        if (ps.character == phase_screen()[0][0])
-            return ::testing::AssertionFailure() << "pixel at [" << p.x << ", " << p.y << "] is empty";
-        if (ps.foreground_color != phase_cfg::palette()[p.color_index])
+        if (p.color_index < 0 && ps.character != phase_screen()[0][0])
+            return ::testing::AssertionFailure() << "pixel at [" << p.x << ", " << p.y << "] is not empty";
+        if (p.color_index >= 0 && ps.foreground_color != phase_cfg::palette()[p.color_index])
             return ::testing::AssertionFailure()
                 << "pixel color at [" << p.x << ", " << p.y << "] = "
                 << phase_cfg::palette()[p.color_index].Print(false)
@@ -193,19 +193,22 @@ TEST(PhaseTest, CurrentColor) {                 // NOLINT(cert-err58-cpp)
 }
 
 TEST(PhaseTest, SimplePastColors) {             // NOLINT(cert-err58-cpp)
+    auto ts = [](unsigned count) {
+        return -(ftxui::phase_cfg::fade_time * count * 11 / 10);
+    };
     auto state = mock_state({
-        {-1555ms, {{-0.67, -1.00}}},
-        {-1111ms, {{-0.78, -1.00}}},
-        { -555ms, {{-0.89, -1.00}}},
-        { -111ms, {{-1.00, -1.00}}}
+        { ts(3), {{-0.67, -1.00}}},
+        { ts(2), {{-0.78, -1.00}}},
+        { ts(1), {{-0.89, -1.00}}},
+        { ts(0), {{-1.00, -1.00}}}
     });
     EXPECT_TRUE(IsColorCorrect(
         phase(state.points.data),
         {
-            {3, 0, 3},
-            {2, 0, 2},
-            {1, 0, 1},
-            {0, 0, 0},
+            {3, 0, -1},
+            {2, 0,  2},
+            {1, 0,  1},
+            {0, 0,  0},
         }
     ));
 }

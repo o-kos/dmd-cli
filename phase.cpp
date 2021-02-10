@@ -39,7 +39,8 @@ public:
         };
 
         using namespace std::chrono;
-        for (auto const &d : data) {
+        for (auto it = data.rbegin(); it != data.rend(); ++it) {
+            auto &d = *it;
             auto ms = duration_cast<milliseconds>(steady_clock::now() - d.first).count();
             auto idx = ms / fade_time.count();
             if (idx >= palette().size()) break;
