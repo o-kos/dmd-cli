@@ -26,7 +26,7 @@ jobs:
     - name: Install LLVM and Clang
       uses: KyleMayes/install-llvm-action@v1
       with:
-          version: "10.0"
+          version: "11.0"
           directory: ${{ runner.temp }}/llvm
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
@@ -56,8 +56,8 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
       env:
-        CC:   clang-10
-        CXX:  clang++-10
+        CC:   clang-11
+        CXX:  clang++-11
 
     - name: Test
       working-directory: ${{github.workspace}}/build
