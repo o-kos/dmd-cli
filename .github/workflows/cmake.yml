@@ -17,19 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Cache LLVM and Clang
-      id: cache-llvm
-      uses: actions/cache@v2
-      with:
-        path: ${{ runner.temp }}/llvm
-        key: llvm-11.0
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-          version: "11.0"
-          directory: ${{ runner.temp }}/llvm
-          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
       with:
@@ -50,8 +37,8 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       env:
-        CC:   clang-11
-        CXX:  clang-11
+        CC:   clang-10
+        CXX:  clang-10
 
     - name: Build
       working-directory: ${{github.workspace}}/build
