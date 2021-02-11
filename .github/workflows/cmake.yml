@@ -57,8 +57,8 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
         shell: bash
         env:
-          CC:   gcc-10
-          CXX:  g++-10
+          CC:   clang-10
+          CXX:  clang++-10
 
     - name: Test
       working-directory: ${{github.workspace}}/build
