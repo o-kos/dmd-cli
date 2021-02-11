@@ -17,6 +17,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache LLVM and Clang
+      id: cache-llvm
+      uses: actions/cache@v2
+      with:
+        path: ${{ runner.temp }}/llvm
+        key: llvm-10.0
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "10.0"
+          directory: ${{ runner.temp }}/llvm
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
       with:
@@ -42,6 +55,10 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
+        shell: bash
+        env:
+          CC:   gcc-10
+          CXX:  g++-10
 
     - name: Test
       working-directory: ${{github.workspace}}/build
