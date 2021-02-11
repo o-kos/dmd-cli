@@ -56,8 +56,8 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
       env:
-        CC:   clang-11
-        CXX:  clang++-11
+        CC:   gcc-10
+        CXX:  g++-10
 
     - name: Test
       working-directory: ${{github.workspace}}/build
