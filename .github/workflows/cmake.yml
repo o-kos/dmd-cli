@@ -50,8 +50,8 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       env:
-        CC:   clang-11
-        CXX:  clang++-11
+        CC:   gcc-10
+        CXX:  g++-10
 
     - name: Build
       working-directory: ${{github.workspace}}/build
