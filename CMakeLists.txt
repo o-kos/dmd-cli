@@ -11,7 +11,7 @@ target_precompile_headers(dmd-term PRIVATE pch.h)
 # FTXUI
 set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "Set to ON to build examples" FORCE)
 set(FTXUI_ENABLE_INSTALL OFF CACHE BOOL "Generate the install target" FORCE)
-set(FTXUI_BUILD_DOCS     OFF CACHE BOOL "Set to ON to build tests"    FORCE)
+set(FTXUI_BUILD_DOCS     OFF CACHE BOOL "Set to ON to build docs"    FORCE)
 add_subdirectory("ext/FTXUI")
 target_link_libraries(dmd-term
     PRIVATE screen
