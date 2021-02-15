@@ -10,14 +10,13 @@ add_executable(dmd-term ${APP_SRC})
 target_link_libraries(dmd-term
     PRIVATE screen
     PRIVATE dom
-#        PRIVATE component # Not needed for this example.
 )
 
 # ryml
 add_subdirectory(ext/rapidyaml ryml)
 target_link_libraries(dmd-term PRIVATE ryml)
 
-enable_testing()
-if (BUILD_TESTS)
+if (NOT BUILD_MAIN_ONLY)
+    enable_testing()
     add_subdirectory(tests)
 endif()
