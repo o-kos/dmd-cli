@@ -3,6 +3,9 @@ project(dmd-term)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "Set to ON to build examples" FORCE)
+set(FTXUI_ENABLE_INSTALL OFF CACHE BOOL "Generate the install target" FORCE)
+set(FTXUI_BUILD_DOCS     OFF CACHE BOOL "Set to ON to build tests"    FORCE)
 add_subdirectory("ext/FTXUI")
 
 set(APP_SRC main.cpp datasource.hpp dmd-render.hpp dmd-state.hpp loren.hpp phase.hpp phase.cpp)
