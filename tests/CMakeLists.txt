@@ -10,6 +10,8 @@ target_link_libraries(dmd-term_tests
     screen dom
 )
 
+add_test(dmd-term_tests dmd-term_tests)
+
 
 
 
